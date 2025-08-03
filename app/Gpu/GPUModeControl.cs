@@ -10,7 +10,6 @@ namespace GHelper.Gpu
     public class GPUModeControl
     {
         SettingsForm settings;
-        ScreenControl screenControl = new ScreenControl();
 
         public static int gpuMode;
         public static bool? gpuExists = null;
@@ -173,11 +172,12 @@ namespace GHelper.Gpu
                     settings.Invoke(delegate
                     {
                         InitGPUMode();
-                        screenControl.AutoScreen();
+                        ScreenControl.AutoScreen();
                     });
 
                     if (eco == 0)
                     {
+                        if (AppConfig.IsNVServiceRestart()) NvidiaGpuControl.RestartNVService();
                         await Task.Delay(TimeSpan.FromMilliseconds(3000));
                         HardwareControl.RecreateGpuControl();
                         Program.modeControl.SetGPUClocks(false);
@@ -214,7 +214,7 @@ namespace GHelper.Gpu
 
         }
 
-        public bool AutoGPUMode(bool optimized = false)
+        public bool AutoGPUMode(bool optimized = false, int delay = 0)
         {
 
             bool GpuAuto = AppConfig.Is("gpu_auto");
@@ -238,6 +238,7 @@ namespace GHelper.Gpu
                 if (eco == 1)
                     if ((GpuAuto && IsPlugged()) || (ForceGPU && GpuMode == AsusACPI.GPUModeStandard))
                     {
+                        if (delay > 0) Thread.Sleep(delay);
                         SetGPUEco(0);
                         return true;
                     }
@@ -252,6 +253,7 @@ namespace GHelper.Gpu
                             if (dialogResult == DialogResult.No) return false;
                         }
 
+                        if (delay > 0) Thread.Sleep(delay);
                         SetGPUEco(1);
                         return true;
                     }
@@ -283,8 +285,7 @@ namespace GHelper.Gpu
             {
                 settings.LockGPUModes("Restarting GPU ...");
 
-                var nvControl = (NvidiaGpuControl)HardwareControl.GpuControl;
-                bool status = nvControl.RestartGPU();
+                bool status = NvidiaGpuControl.RestartGPU();
 
                 settings.Invoke(delegate
                 {

@@ -15,12 +15,31 @@ public static class AsusHid
 
     public static IEnumerable<HidDevice>? FindDevices(byte reportId)
     {
-        HidDeviceLoader loader = new HidDeviceLoader();
         IEnumerable<HidDevice> deviceList;
 
         try
         {
-            deviceList = loader.GetDevices(ASUS_ID).Where(device => deviceIds.Contains(device.ProductID) && device.CanOpen && device.GetMaxFeatureReportLength() > 0);
+            var allDevices = DeviceList.Local.GetHidDevices(ASUS_ID);
+            var filteredDevices = new List<HidDevice>();
+
+            foreach (var device in allDevices)
+            {
+                try
+                {
+                    if (deviceIds.Contains(device.ProductID) &&
+                        device.CanOpen &&
+                        device.GetMaxFeatureReportLength() > 0)
+                    {
+                        filteredDevices.Add(device);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine($"Error checking HID device {device.ProductID:X}: {ex.Message}");
+                }
+            }
+
+            deviceList = filteredDevices;
         }
         catch (Exception ex)
         {
@@ -29,8 +48,18 @@ public static class AsusHid
         }
 
         foreach (var device in deviceList)
-            if (device.GetReportDescriptor().TryGetReport(ReportType.Feature, reportId, out _))
-                yield return device;
+        {
+            bool isValid = false;
+            try
+            {
+                isValid = device.GetReportDescriptor().TryGetReport(ReportType.Feature, reportId, out _);
+            }
+            catch (Exception ex)
+            {
+                //Logger.WriteLine($"Error getting report descriptor for device {device.ProductID.ToString("X")}: {ex.Message}");
+            }
+            if (isValid) yield return device;
+        }
     }
 
     public static HidStream? FindHidStream(byte reportId)

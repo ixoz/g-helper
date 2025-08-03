@@ -15,6 +15,7 @@ namespace GHelper.Input
         System.Timers.Timer timer = new System.Timers.Timer(1000);
         public static bool backlightActivity = true;
         public static bool lidClose = false;
+        public static bool tentMode = false;
 
         public static Keys keyProfile = (Keys)AppConfig.Get("keybind_profile", (int)Keys.F5);
         public static Keys keyApp = (Keys)AppConfig.Get("keybind_app", (int)Keys.F12);
@@ -30,7 +31,6 @@ namespace GHelper.Input
         public static ModifierKeys keyModifierAlt = GetModifierKeys("modifier_keybind_alt", ModifierKeys.Shift | ModifierKeys.Control | ModifierKeys.Alt);
 
         static ModeControl modeControl = Program.modeControl;
-        static ScreenControl screenControl = new ScreenControl();
 
         static bool isTUF = AppConfig.IsTUF();
 
@@ -100,9 +100,11 @@ namespace GHelper.Input
             }
 
             InitBacklightTimer();
+        }
 
+        public static void InitFNLock()
+        {
             if (AppConfig.IsHardwareFnLock()) HardwareFnLock(AppConfig.Is("fn_lock"));
-
         }
 
         public void InitBacklightTimer()
@@ -146,7 +148,7 @@ namespace GHelper.Input
 
             if (!AppConfig.Is("skip_hotkeys"))
             {
-                if (AppConfig.IsDUO())
+                if (AppConfig.IsDUO() || (AppConfig.IsVivoZenbook() && AppConfig.IsOLED()))
                 {
                     hook.RegisterHotKey(keyModifierAlt, Keys.F7);
                     hook.RegisterHotKey(keyModifierAlt, Keys.F8);
@@ -480,10 +482,12 @@ namespace GHelper.Input
                         ToggleTouchScreen();
                         break;
                     case Keys.F7:
-                        SetScreenpad(-10);
+                        if (AppConfig.IsDUO()) SetScreenpad(-10);
+                        else SetBrightnessDimming(-10);
                         break;
                     case Keys.F8:
-                        SetScreenpad(10);
+                        if (AppConfig.IsDUO()) SetScreenpad(10);
+                        else SetBrightnessDimming(10);
                         break;
                     case Keys.F13:
                         ToggleScreenRate();
@@ -575,11 +579,11 @@ namespace GHelper.Input
                     break;
                 case "miniled":
                     if (ScreenCCD.GetHDRStatus()) return;
-                    string miniledName = screenControl.ToogleMiniled();
+                    string miniledName = ScreenControl.ToogleMiniled();
                     Program.toast.RunToast(miniledName, miniledName == Properties.Strings.OneZone ? ToastIcon.BrightnessDown : ToastIcon.BrightnessUp);
                     break;
                 case "aura":
-                    Program.settingsForm.BeginInvoke(Program.settingsForm.CycleAuraMode);
+                    Program.settingsForm.BeginInvoke(Program.settingsForm.CycleAuraMode, Control.ModifierKeys == Keys.Shift ? -1 : 1);
                     break;
                 case "visual":
                     Program.settingsForm.BeginInvoke(Program.settingsForm.CycleVisualMode);
@@ -749,6 +753,21 @@ namespace GHelper.Input
 
         }
 
+        static int GetTentState()
+        {
+            var tentState = Program.acpi.DeviceGet(AsusACPI.TentState);
+            Logger.WriteLine($"Tent: {tentState}");
+            return tentState;
+        }
+
+        public static void TentMode()
+        {
+            var tentState = GetTentState();
+            if (tentState < 0) return;
+            tentMode = tentState > 0;
+            Aura.ApplyBrightness(tentMode ? 0 : GetBacklight(), "Tent");
+        }
+
         static void HandleEvent(int EventID)
         {
             // The ROG Ally uses different M-key codes.
@@ -809,8 +828,10 @@ namespace GHelper.Input
                     case 153:   // FN+F5 OLD MODELS
                         modeControl.CyclePerformanceMode(Control.ModifierKeys == Keys.Shift);
                         return;
+                    case 178:   // FN+LEFT ARROW / FN + F4
+                        Program.settingsForm.BeginInvoke(Program.settingsForm.CycleAuraMode, -1);
+                        return;
                     case 179:   // FN+F4
-                    case 178:   // FN+F4
                         KeyProcess("fnf4");
                         return;
                     case 138:   // Fn + V
@@ -924,6 +945,10 @@ namespace GHelper.Input
                 case 157:   // Zenbook DUO FN+F
                     modeControl.CyclePerformanceMode(Control.ModifierKeys == Keys.Shift);
                     return;
+                case 250:
+                    // Tent Mode
+                    TentMode();
+                    return;
             }
         }
 
@@ -951,6 +976,16 @@ namespace GHelper.Input
                 return;
             }
 
+            if (tentMode)
+            {
+                tentMode = GetTentState() > 0; 
+                if (tentMode)
+                {
+                    Logger.WriteLine("Skipping Backlight Init: Tent Mode");
+                    return;
+                }
+            }
+
             if (!AppConfig.Is("skip_aura"))
             {
                 Aura.Init();
@@ -964,8 +999,7 @@ namespace GHelper.Input
 
         public static void SetBacklightAuto(bool init = false)
         {
-            if (lidClose) return;
-            if (init) Aura.Init();
+            if (lidClose || tentMode) return;
             Aura.ApplyBrightness(GetBacklight(), "Auto", init);
         }
 
@@ -1023,7 +1057,7 @@ namespace GHelper.Input
         public static void ToggleScreenRate()
         {
             AppConfig.Set("screen_auto", 0);
-            screenControl.ToggleScreenRate();
+            ScreenControl.ToggleScreenRate();
         }
 
         public static void ToggleCamera()
@@ -1153,7 +1187,7 @@ namespace GHelper.Input
         {
             if (!AppConfig.IsDUO()) return;
             int brightness = AppConfig.Get("screenpad");
-            if (brightness >= 0) ApplyScreenpadAction(brightness);
+            if (brightness != -1) ApplyScreenpadAction(brightness);
         }
 
         public static void SetStatusLED(bool status)

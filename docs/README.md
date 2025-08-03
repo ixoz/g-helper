@@ -12,10 +12,10 @@ Small and lightweight Armoury Crate alternative for Asus laptops offering almost
 <tr>
    <td><b>Support Project</b></td>
    <td >
-      <a href="https://www.paypal.com/donate/?hosted_button_id=Y7UNMPRNLB5X2"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/paypal-eur.png" height="36" alt="PayPal EUR"></a>&nbsp;
-      <a href="https://www.paypal.com/donate/?hosted_button_id=JSMU7DFHFSJMW"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/paypal-usd.png" height="36" alt="PayPal USD"></a>&nbsp;
-      <a href="https://buy.stripe.com/8wM6pt8HbgK50tWbIK"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/stripe.png" height="36" alt="Stripe"></a>&nbsp;
-      <a href="https://buy.stripe.com/6oE29dg9D3Xj7Wo28b"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/alipay.png" height="36" alt="Alipay"></a>
+      <a href="https://www.paypal.com/donate/?hosted_button_id=Y7UNMPRNLB5X2"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/paypal-eur.png" width="150" alt="PayPal EUR"></a>&nbsp;
+      <a href="https://www.paypal.com/donate/?hosted_button_id=JSMU7DFHFSJMW"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/paypal-usd.png" width="150" alt="PayPal USD"></a>&nbsp;
+      <a href="https://buy.stripe.com/8wM6pt8HbgK50tWbIK"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/stripe.png" width="150"alt="Stripe"></a>&nbsp;
+      <a href="https://buy.stripe.com/6oE29dg9D3Xj7Wo28b"><img src="https://raw.githubusercontent.com/seerge/g-helper/main/docs/alipay.png" width="150" alt="Alipay"></a>
    </td>
 </tr>
 </table>
@@ -36,12 +36,13 @@ Small and lightweight Armoury Crate alternative for Asus laptops offering almost
 ## 📰 Articles
 1. https://www.digitaltrends.com/computing/g-helper-armoury-crate-alternative/
 2. https://binaryfork.com/ghelper-armoury-crate-alternative-10216/
+3. https://www.ultrabookreview.com/71392-optimized-quiet-gaming-5080-5090/
 
 ## :gift: Advantages 
 
 1. Seamless and automatic GPU switching
 2. All performance modes can be fully customized with power limits and fan curves
-3. Lightweight. Doesn't install anything in your system. Just a single exe to run
+3. Lightweight. Just a single exe to run. Doesn't install anything in your system. 
 4. Simple and clean native UI with easy access to all settings
 5. FN-Lock and custom hotkeys
 
@@ -100,23 +101,26 @@ Each BIOS mode is paired with matching Windows Power Mode. You can adjust this s
 ### :mouse: Asus Mouse and other peripherals support
 
 [Currently supported models](https://github.com/seerge/g-helper/discussions/900)
-- ROG Chakram X (P708)
-- ROG Chakram Core (P511)
-- ROG Gladius II and Gladius II Origin (P502 and P504)
+- ROG Chakram X 
+- ROG Chakram Core 
+- ROG Gladius II and Gladius II Origin
 - ROG Gladius II Wireless
 - ROG Gladius III
 - ROG Gladius III Wireless
 - ROG Harpe Ace Aim Lab Edition
+- ROG Harpe Ace Mini
 - ROG Keris Wireless
 - ROG Keris II Ace
-- ROG Strix Carry (P508)
-- ROG Strix III Gladius III Aimpoint Wireless (P711)
-- ROG Strix Impact III (P518)
+- ROG Keris Wireless Aimpoint
+- ROG Strix Carry
+- ROG Strix III Gladius III Aimpoint Wireless 
+- ROG Strix Impact III
+- ROG Strix Impact III Wireless 
 - ROG Spatha X
 - ROG Strix Impact II Wireless
 - ROG Pugio
 - ROG Pugio II
-- TUF Gaming M4 Wireless (P306)
+- TUF Gaming M4 Wireless
 - TUF Gaming M3
 - TUF Gaming M3 Gen II
 - TUF Gaming M4 AIR
